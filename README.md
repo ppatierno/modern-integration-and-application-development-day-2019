@@ -40,3 +40,93 @@ oc create -f https://www.operatorhub.io/install/strimzi-cluster-operator.v0.11.1
 
 The Strimzi operator is installed in the `operators` namespace and is usable from all namespaces in the cluster.
 The operator starts to watch for `Kafka`, `KafkaMirrorMaker` and `KafkaConnect` resources in any namespace.
+
+# Install the initial Apache Kafka cluster
+
+Deploy the initial Apache Kafka cluster by running:
+
+```bash
+oc apply -f 01-starting-cluster.yaml
+```
+
+It create a `Kafka` resource which the Cluster operator takes care for creating the Apache Kafka cluster.
+The Cluster operator also starts the Topic and User operators for handling topics and users via `KafkaTopic` and `KafkaUser` resources.
+
+# Updating Apache Kafka cluster configuration
+
+In order to expose the Kafka cluster outside of the Kubernetes/OpenShift cluster, we have to update the deployed `Kafka` resource by running:
+
+```bash
+oc apply -f 01-update-cluster.yaml
+```
+
+# Creating topic, user and exporting certificates
+
+The demo has an `iot-device-data` topic where the data are sent to.
+The device, connecting from outside the cluster, is authenticated via TLS as `my-device` user and simple authentication is used for allowing it to write to the `iot-device-data` topic.
+A Camel-Kafka-Influxdb application is running in the Kubernetes/OpenShift cluster for getting data from the `iot-device-data` and putting them to Influxdb. It uses a `camel-kafka-influxdb` user with SCRAM-SHA-512 authentication (username/password).
+
+The topic and the users are created by running:
+
+```bash
+oc apply -f 03-topic-users.yaml
+```
+
+Export the certificates related to access via TLS and client authentication by running:
+
+```bash
+./get-device-keys.sh
+```
+
+It creates three files: `ca.crt`, `user.crt` and `user.key`.
+
+# Deploy Influxdb, Grafana and Camel-Kafka-Influxdb application
+
+The Influxdb can be deployed by running:
+
+```bash
+oc apply -f https://github.com/ppatierno/kafka-iot-influxdb/blob/master/deployment/influxdb.yaml
+```
+
+The Grafana interface by running:
+
+```bash
+oc apply -f https://raw.githubusercontent.com/strimzi/strimzi-kafka-operator/0.11.1/metrics/examples/grafana/grafana.yaml
+oc expose service/grafana
+```
+
+And then setting Influxdb as datasource and importing the dashboard from:
+
+```
+https://raw.githubusercontent.com/ppatierno/kafka-iot-influxdb/master/dashboard/kafka-iot-dashboard.json
+```
+
+# Starting the device
+
+Clone the [kafka-iot-influxdb](https://github.com/ppatierno/kafka-iot-influxdb) project.
+Build the `device-app` by running.
+
+```bash
+cd device-app
+mvn clean package
+```
+
+Export `CA_CRT`, `USER_CRT` and `USER_KEY` env vars from the exported certificates.
+
+```bash
+export CA_CRT=$(cat <path to ca.crt file>)
+export USER_CRT=$(cat <path to user.crt file>)
+export USER_CRT=$(cat <path to user.key file>)
+```
+
+Export the `BOOTSTRAP_SERVERS` env var to the external listener route of the Kafka cluser.
+
+```bash
+export BOOTSTRAP_SERVERS=<external listener route>
+```
+
+Finally, start the `device-app` by running:
+
+```bash
+./scripts/run.sh ./target/device-app.jar
+```
