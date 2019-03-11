@@ -1,0 +1,3 @@
+# ignoring crt and key files
+**/*.crt
+**/*.key
