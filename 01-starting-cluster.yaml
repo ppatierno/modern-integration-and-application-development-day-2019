@@ -2,8 +2,6 @@ apiVersion: kafka.strimzi.io/v1alpha1
 kind: Kafka
 metadata:
   name: my-cluster
-  labels:
-    app: kafka
 spec:
   kafka:
     replicas: 3

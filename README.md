@@ -149,7 +149,7 @@ export USER_CRT=$(cat <path to user.key file>)
 Export the `BOOTSTRAP_SERVERS` env var to the external listener route of the Kafka cluser.
 
 ```bash
-export BOOTSTRAP_SERVERS=<external listener route>
+export BOOTSTRAP_SERVERS=$(oc get routes my-cluster-kafka-bootstrap -o jsonpath='{.status.ingress[0].host}':443)
 ```
 
 Finally, start the `device-app` by running:
