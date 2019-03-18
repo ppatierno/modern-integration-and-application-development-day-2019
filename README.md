@@ -143,7 +143,7 @@ Export `CA_CRT`, `USER_CRT` and `USER_KEY` env vars from the exported certificat
 ```bash
 export CA_CRT=$(cat <path to ca.crt file>)
 export USER_CRT=$(cat <path to user.crt file>)
-export USER_CRT=$(cat <path to user.key file>)
+export USER_KEY=$(cat <path to user.key file>)
 ```
 
 Export the `BOOTSTRAP_SERVERS` env var to the external listener route of the Kafka cluser.
