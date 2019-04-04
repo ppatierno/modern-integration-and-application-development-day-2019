@@ -1,6 +1,9 @@
 # Modern integration and application development day 2019
 
-This repository contains the demos from my talk "Strimzi: how Apache Kafka has fallen in love with Kubernetes" at [Modern integration and application development day 2019](https://www.redhat.com/it/events/modern-integration-and-application-development-day-milano-2019)
+This repository contains the demos from my talk "Strimzi: how Apache Kafka has fallen in love with Kubernetes" at [Modern integration and application development day 2019](https://www.redhat.com/it/events/modern-integration-and-application-development-day-milano-2019).
+
+* [Slides](https://www.slideshare.net/paolopat/strimzi-how-apache-kafka-has-fallen-in-love-with-kubernetes)
+* [Video (demo)](https://youtu.be/B9borpGCoD8)
 
 # Requirements
 
